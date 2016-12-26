@@ -10,6 +10,10 @@
 		08025CDB1E0A1EDD002A1E89 /* BleFormatter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08025CD11E0A1EDC002A1E89 /* BleFormatter.framework */; };
 		08025CE01E0A1EDD002A1E89 /* BleFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025CDF1E0A1EDD002A1E89 /* BleFormatterTests.swift */; };
 		08025CE21E0A1EDD002A1E89 /* BleFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 08025CD41E0A1EDC002A1E89 /* BleFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		08025D031E0B6E18002A1E89 /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D021E0B6E18002A1E89 /* BleManager.swift */; };
+		08025D0A1E0BB275002A1E89 /* BleCentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D081E0BB275002A1E89 /* BleCentralManager.swift */; };
+		08025D0B1E0BB275002A1E89 /* BlePeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D091E0BB275002A1E89 /* BlePeripheralManager.swift */; };
+		08025D0D1E0BB27F002A1E89 /* CommonLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D0C1E0BB27F002A1E89 /* CommonLog.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +33,10 @@
 		08025CDA1E0A1EDD002A1E89 /* BleFormatterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BleFormatterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		08025CDF1E0A1EDD002A1E89 /* BleFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleFormatterTests.swift; sourceTree = "<group>"; };
 		08025CE11E0A1EDD002A1E89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		08025D021E0B6E18002A1E89 /* BleManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BleManager.swift; sourceTree = "<group>"; };
+		08025D081E0BB275002A1E89 /* BleCentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BleCentralManager.swift; path = ble/BleCentralManager.swift; sourceTree = "<group>"; };
+		08025D091E0BB275002A1E89 /* BlePeripheralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlePeripheralManager.swift; path = ble/BlePeripheralManager.swift; sourceTree = "<group>"; };
+		08025D0C1E0BB27F002A1E89 /* CommonLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonLog.swift; path = util/CommonLog.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,8 +79,11 @@
 		08025CD31E0A1EDC002A1E89 /* BleFormatter */ = {
 			isa = PBXGroup;
 			children = (
+				08025D071E0BB20E002A1E89 /* ble */,
+				08025D061E0BB204002A1E89 /* util */,
 				08025CD41E0A1EDC002A1E89 /* BleFormatter.h */,
 				08025CD51E0A1EDC002A1E89 /* Info.plist */,
+				08025D021E0B6E18002A1E89 /* BleManager.swift */,
 			);
 			path = BleFormatter;
 			sourceTree = "<group>";
@@ -84,6 +95,23 @@
 				08025CE11E0A1EDD002A1E89 /* Info.plist */,
 			);
 			path = BleFormatterTests;
+			sourceTree = "<group>";
+		};
+		08025D061E0BB204002A1E89 /* util */ = {
+			isa = PBXGroup;
+			children = (
+				08025D0C1E0BB27F002A1E89 /* CommonLog.swift */,
+			);
+			name = util;
+			sourceTree = "<group>";
+		};
+		08025D071E0BB20E002A1E89 /* ble */ = {
+			isa = PBXGroup;
+			children = (
+				08025D081E0BB275002A1E89 /* BleCentralManager.swift */,
+				08025D091E0BB275002A1E89 /* BlePeripheralManager.swift */,
+			);
+			name = ble;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,6 +177,7 @@
 					08025CD01E0A1EDC002A1E89 = {
 						CreatedOnToolsVersion = 8.2;
 						DevelopmentTeam = 6X2JS9YAAQ;
+						LastSwiftMigration = 0820;
 						ProvisioningStyle = Automatic;
 					};
 					08025CD91E0A1EDD002A1E89 = {
@@ -198,6 +227,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08025D031E0B6E18002A1E89 /* BleManager.swift in Sources */,
+				08025D0D1E0BB27F002A1E89 /* CommonLog.swift in Sources */,
+				08025D0A1E0BB275002A1E89 /* BleCentralManager.swift in Sources */,
+				08025D0B1E0BB275002A1E89 /* BlePeripheralManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,7 +294,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -308,7 +341,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -322,6 +355,7 @@
 		08025CE61E0A1EDD002A1E89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 6X2JS9YAAQ;
@@ -334,6 +368,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.co.canon-soft.BleFormatter";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -341,6 +376,7 @@
 		08025CE71E0A1EDD002A1E89 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 6X2JS9YAAQ;
@@ -360,6 +396,7 @@
 		08025CE91E0A1EDD002A1E89 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 6X2JS9YAAQ;
 				INFOPLIST_FILE = BleFormatterTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -372,6 +409,7 @@
 		08025CEA1E0A1EDD002A1E89 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				DEVELOPMENT_TEAM = 6X2JS9YAAQ;
 				INFOPLIST_FILE = BleFormatterTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -400,6 +438,7 @@
 				08025CE71E0A1EDD002A1E89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		08025CE81E0A1EDD002A1E89 /* Build configuration list for PBXNativeTarget "BleFormatterTests" */ = {
 			isa = XCConfigurationList;
@@ -408,6 +447,7 @@
 				08025CEA1E0A1EDD002A1E89 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
