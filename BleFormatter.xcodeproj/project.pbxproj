@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		08025CDB1E0A1EDD002A1E89 /* BleFormatter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08025CD11E0A1EDC002A1E89 /* BleFormatter.framework */; };
 		08025CE01E0A1EDD002A1E89 /* BleFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025CDF1E0A1EDD002A1E89 /* BleFormatterTests.swift */; };
-		08025CE21E0A1EDD002A1E89 /* BleFormatter.h in Headers */ = {isa = PBXBuildFile; fileRef = 08025CD41E0A1EDC002A1E89 /* BleFormatter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		08025D031E0B6E18002A1E89 /* BleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D021E0B6E18002A1E89 /* BleManager.swift */; };
 		08025D0A1E0BB275002A1E89 /* BleCentralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D081E0BB275002A1E89 /* BleCentralManager.swift */; };
 		08025D0B1E0BB275002A1E89 /* BlePeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D091E0BB275002A1E89 /* BlePeripheralManager.swift */; };
 		08025D0D1E0BB27F002A1E89 /* CommonLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08025D0C1E0BB27F002A1E89 /* CommonLog.swift */; };
+		08C66A261E10C0D30021448C /* BleDataFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08C66A251E10C0D30021448C /* BleDataFormat.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +28,6 @@
 
 /* Begin PBXFileReference section */
 		08025CD11E0A1EDC002A1E89 /* BleFormatter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BleFormatter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		08025CD41E0A1EDC002A1E89 /* BleFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BleFormatter.h; sourceTree = "<group>"; };
 		08025CD51E0A1EDC002A1E89 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		08025CDA1E0A1EDD002A1E89 /* BleFormatterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BleFormatterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		08025CDF1E0A1EDD002A1E89 /* BleFormatterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleFormatterTests.swift; sourceTree = "<group>"; };
@@ -37,6 +36,7 @@
 		08025D081E0BB275002A1E89 /* BleCentralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BleCentralManager.swift; path = ble/BleCentralManager.swift; sourceTree = "<group>"; };
 		08025D091E0BB275002A1E89 /* BlePeripheralManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BlePeripheralManager.swift; path = ble/BlePeripheralManager.swift; sourceTree = "<group>"; };
 		08025D0C1E0BB27F002A1E89 /* CommonLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommonLog.swift; path = util/CommonLog.swift; sourceTree = "<group>"; };
+		08C66A251E10C0D30021448C /* BleDataFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BleDataFormat.swift; path = ble/BleDataFormat.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,7 +81,7 @@
 			children = (
 				08025D071E0BB20E002A1E89 /* ble */,
 				08025D061E0BB204002A1E89 /* util */,
-				08025CD41E0A1EDC002A1E89 /* BleFormatter.h */,
+				08C66A251E10C0D30021448C /* BleDataFormat.swift */,
 				08025CD51E0A1EDC002A1E89 /* Info.plist */,
 				08025D021E0B6E18002A1E89 /* BleManager.swift */,
 			);
@@ -121,7 +121,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				08025CE21E0A1EDD002A1E89 /* BleFormatter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				08025D031E0B6E18002A1E89 /* BleManager.swift in Sources */,
+				08C66A261E10C0D30021448C /* BleDataFormat.swift in Sources */,
 				08025D0D1E0BB27F002A1E89 /* CommonLog.swift in Sources */,
 				08025D0A1E0BB275002A1E89 /* BleCentralManager.swift in Sources */,
 				08025D0B1E0BB275002A1E89 /* BlePeripheralManager.swift in Sources */,

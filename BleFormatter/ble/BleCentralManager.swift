@@ -40,12 +40,9 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     static let sharedInstance: BleCentralManager = BleCentralManager()
     var centralManager: CBCentralManager!
     var peripheralDict:Dictionary<String, CBPeripheral> = [String:CBPeripheral]()
-    var msgText:String?
     
     var serviceUUID: [CBUUID]?
-    var characteristicUUID: CBUUID?
-    var ncMsg: String?
-    var statusDidWrite: String?
+    var dataFormatList:[BleDataFormat] = []
     
     // =========================================================================
     // MARK: Private
@@ -54,10 +51,8 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
     }
     
-    func setInitData(serviceUUID:String, charUUID:String, ncMsg:String) {
+    func setInitData(serviceUUID:String) {
         self.serviceUUID = [CBUUID(string:serviceUUID)]
-        self.characteristicUUID = CBUUID(string:charUUID)
-        self.ncMsg = ncMsg
     }
     
     // =========================================================================
@@ -71,9 +66,6 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         DLOG(LogKind.CE,message:"スキャン開始")
         let OPTION:Dictionary = [CBCentralManagerScanOptionAllowDuplicatesKey:false]
         self.centralManager!.scanForPeripherals(withServices: serviceUUID, options:OPTION)
-        
-//        self.centralManager!.scanForPeripheralsWithServices(serviceUUID, options:nil)
-//        self.centralManager!.scanForPeripheralsWithServices(nil, options:OPTION)
     }
     
     func stopScan() {
@@ -81,15 +73,12 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.peripheralDict.removeAll()
     }
     
-    func writeMsg(_ msg:String?, statusDidWrite:String?) {
+    func writeMsg(withBleDataFormatter dFormatter:BleDataFormat) {
 //        if centralManager.isScanning {
 //            DLOG(LogKind.CE,message:"スキャン中....")
 //            return
 //        }
-        
-        self.statusDidWrite = statusDidWrite
-        self.msgText = msg
-        DLOG(LogKind.CE, message:"msg:\(msg)")
+        self.dataFormatList.append(dFormatter)
         self.startScan()
     }
     // =========================================================================
@@ -136,6 +125,10 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         let uuid = advertisementData[CBAdvertisementDataOverflowServiceUUIDsKey]
         let localName  = advertisementData[CBAdvertisementDataLocalNameKey]
         DLOG(LogKind.CE,message:"発見したBLEデバイス: \(peripheral) localName: \(localName) uuid: \(uuid)")
+        if peripheral.name == nil {
+            DLOG(LogKind.CE,message:"periferal name nil")
+            return
+        }
         
         let value = self.peripheralDict[peripheral.name!]
         if value == nil {
@@ -210,32 +203,30 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         let characteristics = service.characteristics!
         DLOG(LogKind.CE,message:"\(characteristics.count) 個のキャラクタリスティックを発見！ \(characteristics)")
         
+        
         for characteristic in characteristics {
             
-            if characteristic.uuid.isEqual(self.characteristicUUID) {
-                
-                
-                DLOG(LogKind.CE,message:"SAME UUID")
-                characteristic.properties
-                if characteristic.properties.contains(CBCharacteristicProperties.notify) {
-                    DLOG(LogKind.CE,message:"Notify On ")
-//                    peripheral.setNotifyValue(true, forCharacteristic: characteristic)
-                }
-                if characteristic.properties.contains(CBCharacteristicProperties.read) {
-                    DLOG(LogKind.CE,message:"Read On ")
-//                    peripheral.readValueForCharacteristic(characteristic)
-                }
-                if characteristic.properties.contains(CBCharacteristicProperties.write) {
-                    var name = UIDevice.current.name;
-                    var msg = self.msgText! + " from " + name
-                    let data = msg.data(using: String.Encoding.utf8)
-                    DLOG(LogKind.CE,message:"Write On :\(msg)")
-                    peripheral.writeValue(data!, for: characteristic, type: CBCharacteristicWriteType.withResponse)
-                }
-                if characteristic.properties.contains(CBCharacteristicProperties.writeWithoutResponse) {
-                    DLOG(LogKind.CE,message:"WriteWithResopnse On ")
-//                    let data = self.msgText?.dataUsingEncoding(NSUTF8StringEncoding)
-//                    peripheral.writeValue(data!, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithoutResponse)
+            for dataFormat in self.dataFormatList {
+                if characteristic.uuid.isEqual(dataFormat.characteristicUUID) {
+                    
+                    DLOG(LogKind.CE,message:"SAME UUID")
+                    if characteristic.properties.contains(CBCharacteristicProperties.notify) {
+                        DLOG(LogKind.CE,message:"Notify On ")
+                        //                    peripheral.setNotifyValue(true, forCharacteristic: characteristic)
+                    }
+                    if characteristic.properties.contains(CBCharacteristicProperties.read) {
+                        DLOG(LogKind.CE,message:"Read On ")
+                        //                    peripheral.readValueForCharacteristic(characteristic)
+                    }
+                    if characteristic.properties.contains(CBCharacteristicProperties.write) {
+                        DLOG(LogKind.CE,message:"Write On :\(dataFormat.value)")
+                        peripheral.writeValue(dataFormat.value, for: characteristic, type: CBCharacteristicWriteType.withResponse)
+                    }
+                    if characteristic.properties.contains(CBCharacteristicProperties.writeWithoutResponse) {
+                        DLOG(LogKind.CE,message:"WriteWithResopnse On ")
+                        //                    let data = self.msgText?.dataUsingEncoding(NSUTF8StringEncoding)
+                        //                    peripheral.writeValue(data!, forCharacteristic: characteristic, type: CBCharacteristicWriteType.WithoutResponse)
+                    }
                 }
             }
         }
@@ -286,7 +277,15 @@ class BleCentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.centralManager.cancelPeripheralConnection(peripheral)
 //        self.stopScan()
         let nc = NotificationCenter.default
-        nc.post(name: Notification.Name(rawValue: self.ncMsg!), object: nil, userInfo: ["message" : self.statusDidWrite])
+        
+        for index in 0 ..< self.dataFormatList.count {
+            if characteristic.uuid.isEqual(dataFormatList[index].characteristicUUID) {
+                let userInfo = [BleDataKey.NOTIFY_WRITE.description():dataFormatList[index]]
+                nc.post(name: Notification.Name(rawValue: BleStatus.DID_WRITE.description()), object: nil, userInfo: userInfo)
+                dataFormatList.removeAll()
+                break
+            }
+        }
     }
     
 }

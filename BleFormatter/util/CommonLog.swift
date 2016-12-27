@@ -9,11 +9,13 @@
 import Foundation
 
 enum LogKind:String {
-    case COM, CE, PE
+    case COM, BM, CE, PE
     func logText()-> String {
         switch(self){
         case .COM:
             return "[COM]"
+        case .BM:
+            return "[BM]"
         case .CE:
             return "[CE]"
         case .PE:

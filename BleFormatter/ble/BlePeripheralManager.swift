@@ -14,10 +14,9 @@ class BlePeripheralManager: NSObject,CBPeripheralManagerDelegate {
     
     static let sharedInstance: BlePeripheralManager = BlePeripheralManager()
     var peripheralManager: CBPeripheralManager!
-    var characteristic: CBMutableCharacteristic!
+    var characteristics: [CBMutableCharacteristic] = []
     var serviceUUID: CBUUID?
-    var characteristicUUID: CBUUID?
-    var ncMsg: String?
+    var dataFormatList:[BleDataFormat] = []
     
     
 //    override func viewDidLoad() {
@@ -41,13 +40,20 @@ class BlePeripheralManager: NSObject,CBPeripheralManagerDelegate {
     }
     
     
-    func setInitData(serviceUUID:String, charUUID:String, ncMsg:String) {
+    func setInitData(serviceUUID:String) {
         self.serviceUUID = CBUUID(string:serviceUUID)
-        self.characteristicUUID = CBUUID(string:charUUID)
-        self.ncMsg = ncMsg
+    }
+    
+    public func setDataFormat(bleFormat:[BleDataFormat]) {
+        self.dataFormatList = bleFormat
     }
     
     func publishservice () {
+        
+        if 0 >= dataFormatList.count {
+            DLOG(LogKind.PE,message: "not dataFormatters!!!! can not publishservice....")
+            return
+        }
         
         // サービスを作成
         let service = CBMutableService(type: serviceUUID!, primary: true)
@@ -58,22 +64,27 @@ class BlePeripheralManager: NSObject,CBPeripheralManagerDelegate {
         let permissions: CBAttributePermissions =
         [CBAttributePermissions.readable, CBAttributePermissions.writeable]
         
-        self.characteristic = CBMutableCharacteristic(
-            type: characteristicUUID!,
-            properties: properties,
-            value: nil,
-            permissions: permissions)
-        
-        // キャラクタリスティックをサービスにセット
-        service.characteristics = [self.characteristic]
+        for dFormat in dataFormatList {
+            let characteristic = CBMutableCharacteristic(
+                type: dFormat.characteristicUUID,
+                properties: properties,
+                value: nil,
+                permissions: permissions)
+            
+//            // 値をセット
+//            let value = UInt8(arc4random() & 0xFF)
+//            let data = Data(bytes: UnsafePointer<UInt8>([value]), count: 1)
+//            characteristic.value = data;
+            
+            // キャラクタリスティックをサービスにセット
+            self.characteristics.append(characteristic)
+            
+        }
+        service.characteristics = self.characteristics
         
         // サービスを Peripheral Manager にセット
         self.peripheralManager.add(service)
         
-        // 値をセット
-        let value = UInt8(arc4random() & 0xFF)
-        let data = Data(bytes: UnsafePointer<UInt8>([value]), count: 1)
-        self.characteristic.value = data;
     }
     
     // =========================================================================
@@ -163,39 +174,47 @@ class BlePeripheralManager: NSObject,CBPeripheralManagerDelegate {
         DLOG(LogKind.PE,message:"Readリクエスト受信！ requested service uuid:\(request.characteristic.service.uuid) characteristic uuid:\(request.characteristic.uuid) value:\(value)")
         
         // プロパティで保持しているキャラクタリスティックへのReadリクエストかどうかを判定
-        if request.characteristic.uuid.isEqual(self.characteristic.uuid) {
-            
-            // CBMutableCharacteristicのvalueをCBATTRequestのvalueにセット
-            request.value = self.characteristic.value;
-            
-            // リクエストに応答
-            self.peripheralManager.respond(to: request, withResult: CBATTError.Code.success)
-        }
+//        if request.characteristic.uuid.isEqual(self.characteristic.uuid) {
+//            
+//            // CBMutableCharacteristicのvalueをCBATTRequestのvalueにセット
+//            request.value = self.characteristic.value;
+//            
+//            // リクエストに応答
+//            self.peripheralManager.respond(to: request, withResult: CBATTError.Code.success)
+//        }
     }
     
-//    func peripheralManagerIsReadyToUpdateSubscribers(peripheral: CBPeripheralManager) {
-//    }
     
     // Writeリクエスト受信時に呼ばれる
     func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest]) {
 
         DLOG(LogKind.PE,message:"\(requests.count) 件のWriteリクエストを受信！")
 
+//        guard let dataFormatters = self.dataFormatList else {
+//            DLOG(LogKind.PE,message: "not dataFormatters!!!! can not received....")
+//            return
+//        }
+        
         for request in requests {
             
             DLOG(LogKind.PE,message:"Requested service uuid:\(request.characteristic.service.uuid) characteristic uuid:\(request.characteristic.uuid)")
             
-            if request.characteristic.uuid.isEqual(self.characteristic.uuid) {
-                
-                // CBMutableCharacteristicのvalueに、CBATTRequestのvalueをセット
-                self.characteristic.value = request.value;
-                DLOG(LogKind.PE,message:"\(requests.count) 件のWriteリクエストを受信！")
-                let nc = NotificationCenter.default
-                if self.characteristic.value != nil {
-                    let value = NSString(data: self.characteristic.value!, encoding: String.Encoding.utf8.rawValue)
-                    nc.post(name: Notification.Name(rawValue: self.ncMsg!), object: nil, userInfo: ["message" : value!.description])
+            for index in 0 ..< self.characteristics.count {
+                if request.characteristic.uuid.isEqual(self.characteristics[index].uuid) {
+                    
+                    // CBMutableCharacteristicのvalueに、CBATTRequestのvalueをセット
+                    self.characteristics[index].value = request.value;
+                    DLOG(LogKind.PE,message:"\(requests.count) 件のWriteリクエストを受信！")
+                    let nc = NotificationCenter.default
+                    
+                    if self.characteristics[index].value != nil {
+                        self.dataFormatList[index].setData(self.characteristics[index].value!)
+                        
+                        let userInfo = [BleDataKey.NOTIFY_READ.description():dataFormatList[index]]
+                        nc.post(name: Notification.Name(rawValue: BleStatus.DID_READ.description()), object: nil, userInfo: userInfo)
+                    }
+                    
                 }
-                
             }
         }
 
