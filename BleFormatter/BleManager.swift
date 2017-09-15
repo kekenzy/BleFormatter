@@ -7,76 +7,90 @@
 //
 
 import Foundation
+import CoreBluetooth
+import UIKit
 
+let MESSAGE_READ:String = "MESSAGE_READ"
+let MESSAGE_WRITE:String = "MESSAGE_WRITE"
 
 public class BleManager {
     public static let sharedInstance: BleManager = BleManager()
+    
+    // =========================================================================
+    // MARK: Private
     var bleCentralManager:BleCentralManager!;
     var blePeripheralManager:BlePeripheralManager!;
     
     var _serviceUUID:String!
     var _charUUID:String!
-    var _ncMsg:String!
-    
-//    public var serviceUUID:String {
-//        get {
-//            return _serviceUUID
-//        }
-//        set {
-//            _serviceUUID = newValue
-//        }
-//    }
-//    
-//    public var charUUID:String {
-//        get {
-//            return _charUUID
-//        }
-//        set {
-//            _charUUID = newValue
-//        }
-//    }
-//    
-//    public var ncMsg:String {
-//        get {
-//            return _ncMsg
-//        }
-//        set {
-//            _ncMsg = newValue
-//        }
-//    }
-    
-    
-    
+    var _dataFormat:[BleDataFormat]!
+    var _deviceName:String!
     
     fileprivate init() {
         self.bleCentralManager = BleCentralManager.sharedInstance;
         self.blePeripheralManager = BlePeripheralManager.sharedInstance
+        self._deviceName = UIDevice.current.name;
     }
     
-    public func setUUID(serviceUUID:String, charUUID:String, ncMsg:String) {
+    // =========================================================================
+    // MARK: Public
+    
+    public func setUUID(serviceUUID:String) {
         self._serviceUUID = serviceUUID
-        self._charUUID = charUUID
-        self._ncMsg = ncMsg
-        self.bleCentralManager.setInitData(serviceUUID: serviceUUID, charUUID: charUUID, ncMsg: ncMsg)
-        self.blePeripheralManager.setInitData(serviceUUID: serviceUUID, charUUID: charUUID, ncMsg: ncMsg)
+        self.bleCentralManager.setInitData(serviceUUID: serviceUUID)
+        self.blePeripheralManager.setInitData(serviceUUID: serviceUUID)
     }
     
-    public func write(msg:String?, statusDidWrite:String?) {
-        bleCentralManager.writeMsg(msg, statusDidWrite: statusDidWrite)
+    public func setReadDataFormat(bleDataFormat:[BleDataFormat]) {
+        self.blePeripheralManager.setDataFormat(bleFormat: bleDataFormat)
+    }
+    
+    // =========================================================================
+    // Observer 
+    
+    public func addObserver(_ viewCtrl:UIViewController, withRead completion:(Selector)) -> Void {
+        let nc = NotificationCenter.default
+        nc.addObserver(viewCtrl, selector: completion, name: NSNotification.Name(rawValue: BleStatus.DID_READ.description()), object: nil)
+    }
+    
+    public func addObserver(_ viewCtrl:UIViewController, withWrite completion:(Selector)) -> Void {
+        let nc = NotificationCenter.default
+        nc.addObserver(viewCtrl, selector: completion, name: NSNotification.Name(rawValue: BleStatus.DID_WRITE.description()), object: nil)
     }
     
     
-    public func read() {
-        
+    // =========================================================================
+    // Write Data
+    
+    public func write(withData data:Data, dataFormat dFormat:inout BleDataFormat) {
+        DLOG(LogKind.BM, message:"write data:\(data)")
+        dFormat.setData(data)
+        bleCentralManager.writeMsg(withBleDataFormatter: dFormat)
+    }
+    
+    public func write(withString data:String, dataFormat dFormat:inout BleDataFormat) {
+        DLOG(LogKind.BM, message:"write data:\(data)")
+        let tmpMsg = data + "," + self._deviceName
+        let data = tmpMsg.data(using: String.Encoding.utf8)
+        dFormat.setData(data!)
+        bleCentralManager.writeMsg(withBleDataFormatter: dFormat)
+    }
+    
+    public func write(withInt data:Int, dataFormat dFormat:inout BleDataFormat) {
+        DLOG(LogKind.BM, message:"write data:\(data)")
+        let tmpMsg = String(data) + "," + self._deviceName
+        let data = tmpMsg.data(using: String.Encoding.utf8)
+        dFormat.setData(data!)
+        bleCentralManager.writeMsg(withBleDataFormatter: dFormat)
+    }
+    
+    public func write(withDouble data:Double, dataFormat dFormat:inout BleDataFormat) {
+        DLOG(LogKind.BM, message:"write data:\(data)")
+        let tmpMsg = String(data) + "," + self._deviceName
+        let data = tmpMsg.data(using: String.Encoding.utf8)
+        dFormat.setData(data!)
+        bleCentralManager.writeMsg(withBleDataFormatter: dFormat)
     }
 }
 
-public class BleDataFormat {
-    var dataType:CharacterType = .None
-    var notificationMsg:String = ""
-    
-}
 
-public enum CharacterType {
-    case Float, Double, Int, String, Data, None
-}

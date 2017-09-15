@@ -15,9 +15,6 @@ public struct BleDataFormat {
     public var dataType:BleDataType
     public var value:Data
     
-//    fileprivate init() {
-//    }
-    
     public init(uuid:String, dataType dType:BleDataType) {
         self.characteristicUUID = CBUUID(string:uuid)
         self.dataType = dType
@@ -27,6 +24,9 @@ public struct BleDataFormat {
     public mutating func setData(_ data:Data) {
         self.value = data
     }
+    
+    // =========================================================================
+    // Data Converter
     
     public func getStringFromValue() -> String {
         let str = NSString(data: self.value, encoding: String.Encoding.utf8.rawValue)!

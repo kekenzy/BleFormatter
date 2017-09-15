@@ -232,6 +232,5 @@ class BlePeripheralManager: NSObject,CBPeripheralManagerDelegate {
     func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didUnsubscribeFrom characteristic: CBCharacteristic) {
         DLOG(LogKind.PE,message:"Notify停止要求受信！")
     }
-    
 }
 
